@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::collections::HashMap;
 
 fn main() {
     let filename:String = get_file_name();
@@ -12,6 +13,9 @@ fn main() {
         println!("{}", line);
     }
     println!("\n a total of {} lines were read", lines.len());
+
+    let (total_value,total_index) = get_total_value_and_line_number(lines);
+    println!("Total portfolio value is {}", total_value); 
 }
 
 fn get_file_name() -> String {
@@ -26,5 +30,31 @@ fn read_to_string_vector(filename:String) -> Vec<String> {
     return lines;
 }
 
-fn get_total_value_and_line_number(contents:Vec<String>) -> (f64,i32) {
+fn get_total_value_and_line_number(contents:Vec<String>) -> (f64,usize) {
+    let mut line_count : usize = 0;
+    let mut total_value: f64 = 0.0;
+    let mut total_value_line: &str;
+    for (index,line) in contents.iter().enumerate(){
+        if line.contains("Toplam Port"){
+            total_value_line = &line;
+            let splits: Vec<&str> = total_value_line.split_whitespace().filter(|s| !s.is_empty()).collect();
+            if splits.len() < 4{
+                continue;
+            }
+            total_value = splits[3].replace(',',"").parse::<f64>().expect("Could not parse the total value content");
+            line_count = index;
+            break;
+        } 
+    }
+    return (total_value,line_count);
+}
+
+fn parse_stock_values(contents:Vec<String>,total_value_index:usize) -> (HashMap<String,f64>,usize){
+    let mut last_index= total_value_index;
+    let mut stock_values:HashMap<String,f64> = HashMap::new();
+    for (index,line) in contents.iter().enumerate(){
+        if index < total_value_index { continue;}
+    }
+
+    return (stock_values,last_index);
 }
