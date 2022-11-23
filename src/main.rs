@@ -7,7 +7,7 @@ fn main() {
     println!("Reading portfolio file...: {} " , filename);
     
 
-    let lines:Vec<String> = read_to_string_vector(filename);
+    let lines: &mut Vec<String> = &mut read_to_string_vector(filename);
     println!("Contents \n ");
     for line in lines.iter().clone() {
         println!("{}", line);
@@ -15,6 +15,7 @@ fn main() {
     println!("\n a total of {} lines were read", lines.len());
 
     let (total_value,total_index) = get_total_value_and_line_number(lines);
+    let (stock_values,end_of_stock_values_index) = parse_stock_values(lines,total_index);
     println!("Total portfolio value is {}", total_value); 
 }
 
@@ -30,7 +31,7 @@ fn read_to_string_vector(filename:String) -> Vec<String> {
     return lines;
 }
 
-fn get_total_value_and_line_number(contents:Vec<String>) -> (f64,usize) {
+fn get_total_value_and_line_number(contents:&mut Vec<String>) -> (f64,usize) {
     let mut line_count : usize = 0;
     let mut total_value: f64 = 0.0;
     let mut total_value_line: &str;
@@ -49,7 +50,7 @@ fn get_total_value_and_line_number(contents:Vec<String>) -> (f64,usize) {
     return (total_value,line_count);
 }
 
-fn parse_stock_values(contents:Vec<String>,total_value_index:usize) -> (HashMap<String,f64>,usize){
+fn parse_stock_values(contents:&mut Vec<String>,total_value_index:usize) -> (HashMap<String,f64>,usize){
     let mut last_index= total_value_index;
     let mut stock_values:HashMap<String,f64> = HashMap::new();
     for (index,line) in contents.iter().enumerate(){
